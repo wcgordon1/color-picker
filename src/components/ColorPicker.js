@@ -39,7 +39,8 @@ const ColorPicker = () => {
       const { colors } = imagePalette(imageData.data, 10);
       const extractedPalette = colors.map(color => ({
         rgb: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-        hex: rgbToHex(color[0], color[1], color[2])
+        hex: rgbToHex(color[0], color[1], color[2]),
+        isLight: isLightColor(color[0], color[1], color[2])
       }));
       setPalette(extractedPalette);
       setSelectedColor(extractedPalette[0]);
@@ -52,6 +53,11 @@ const ColorPicker = () => {
     const hex = x.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
   }).join('');
+
+  const isLightColor = (r, g, b) => {
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.5;
+  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -92,18 +98,26 @@ const ColorPicker = () => {
             {palette.map((color, index) => (
               <div
                 key={index}
-                className="w-16 h-16 cursor-pointer rounded-md shadow-md transition-transform hover:scale-105"
+                className="w-16 h-16 cursor-pointer rounded-md shadow-md transition-transform hover:scale-105 relative"
                 style={{ backgroundColor: color.rgb }}
                 onClick={() => setSelectedColor(color)}
-              ></div>
+              >
+                {selectedColor && color.hex === selectedColor.hex && (
+                  <div 
+                    className={`absolute top-1 right-1 w-3 h-3 rounded-full ${color.isLight ? 'bg-black' : 'bg-white'}`}
+                  ></div>
+                )}
+              </div>
             ))}
           </div>
+          <h3 className="text-xl font-bold mb-4">Color Details</h3>
           {selectedColor && (
             <div className="flex items-stretch">
               <div
                 className="w-16 h-32 rounded-md shadow-md mr-4 flex-shrink-0"
                 style={{ backgroundColor: selectedColor.rgb }}
-              ></div>
+              >
+              </div>
               <div className="flex-grow flex flex-col">
                 <div 
                   className="flex-1 bg-white rounded-md shadow-md mb-2 flex items-center justify-between px-4 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
