@@ -1,16 +1,36 @@
 import { Inter } from 'next/font/google';
-import "./globals.css";
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Color Picker - Extract Colors from Images',
   description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
+  icons: {
+    icon: '/favicon.ico',  // Favicon
+    apple: '/images/logocolor.png',  // Apple touch icon
+    other: [
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        url: '/images/logocolor.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '16x16',
+        url: '/images/logocolor.png',
+      },
+    ],
+  },
+  manifest: '/site.webmanifest',  // Web manifest
+
   openGraph: {
-    type: 'website',
-    url: 'https://www.colorpicker.photos',
     title: 'Color Picker - Extract Colors from Images',
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
+    url: 'https://www.colorpicker.photos',
+    type: 'website',
     images: [
       {
         url: 'https://www.colorpicker.photos/images/ogimage1.png',
@@ -19,8 +39,8 @@ export const metadata = {
         alt: 'Color Picker App',
       },
     ],
-    siteName: 'Color Picker',
   },
+
   twitter: {
     card: 'summary_large_image',
     site: '@helloIamWilly',
@@ -28,18 +48,15 @@ export const metadata = {
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
     images: ['https://www.colorpicker.photos/images/ogimage1.png'],
   },
-  icons: {
-    icon: '/images/logocolor.png',
-  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-      </head>
       <body className={inter.className}>
+        {/* Simple Analytics Script */}
+        <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+        <noscript><img src="https://simpleanalyticscdn.com/noscript.gif" alt=""/></noscript>
         {children}
       </body>
     </html>

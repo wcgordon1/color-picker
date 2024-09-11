@@ -1,0 +1,22 @@
+{
+    "name": "Color Picker",
+    "short_name": "ColorPicker",
+    "description": "Upload an image and extract its color palette. Perfect for designers and developers.",
+    "icons": [
+      {
+        "src": "/images/logocolor.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/images/logocolor.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "orientation": "portrait"
+  }
