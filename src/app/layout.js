@@ -24,7 +24,7 @@ export const metadata = {
     site: '@helloIamWilly',
     title: 'Color Picker - Extract Colors from Images',
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
-    images: ['https://www.colorpicker.photos/mages/og-image1.png'],
+    images: ['https://www.colorpicker.photos/images/og-image1.png'],
   },
 };
 
