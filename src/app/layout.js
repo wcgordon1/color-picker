@@ -24,7 +24,7 @@ export const metadata = {
     site: '@helloIamWilly',
     title: 'Color Picker - Extract Colors from Images',
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
-    images: ['https://www.colorpicker.photos/images/ogimage1.png'],
+    image: 'https://www.colorpicker.photos/images/ogimage1.png',  // Fixed here
   },
 };
 
@@ -34,17 +34,20 @@ export default function RootLayout({ children }) {
       <head>
         {/* Favicon */}
         <link rel="icon" href="https://www.colorpicker.photos/images/logocolor.png" sizes="any" />
-        
+
         {/* Meta tags */}
         <meta name="description" content={metadata.description} />
         <meta property="og:title" content={metadata.openGraph.title} />
         <meta property="og:description" content={metadata.openGraph.description} />
         <meta property="og:image" content={metadata.openGraph.images[0].url} />
+        <meta property="og:site_name" content={metadata.openGraph.site_name} />
+        
+        {/* Twitter Meta Tags */}
         <meta name="twitter:card" content={metadata.twitter.card} />
         <meta name="twitter:site" content={metadata.twitter.site} />
         <meta name="twitter:title" content={metadata.twitter.title} />
         <meta name="twitter:description" content={metadata.twitter.description} />
-        <meta name="twitter:image" content={metadata.twitter.images[0]} />
+        <meta name="twitter:image" content={metadata.twitter.image} />
 
         {/* Simple Analytics Script */}
         <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
