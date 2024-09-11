@@ -3,8 +3,8 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import imagePalette from 'image-palette';
-import { FaCopy } from 'react-icons/fa';
-import toast, { Toaster } from 'react-hot-toast';
+import { FaCopy, FaExpand } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const ColorPicker = () => {
   const [image, setImage] = useState(null);
@@ -12,7 +12,23 @@ const ColorPicker = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    if (rejectedFiles.length > 0) {
+      toast.error('Only JPEG, JPG, and PNG files!', {
+        style: {
+          border: '1px solid #ff4b4b',
+          padding: '16px',
+          color: '#ff4b4b',
+        },
+        iconTheme: {
+          primary: '#ff4b4b',
+          secondary: '#FFFAEE',
+        },
+        position: 'top-right',
+      });
+      return;
+    }
+
     const file = acceptedFiles[0];
     const reader = new FileReader();
 
@@ -25,7 +41,14 @@ const ColorPicker = () => {
     reader.readAsDataURL(file);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
+    },
+    multiple: false,
+  });
 
   const extractColors = (imageData) => {
     const img = new Image();
@@ -61,12 +84,13 @@ const ColorPicker = () => {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success(`Copied! ${text}`);
+    toast.success(`Copied! ${text}`, {
+      position: 'bottom-center',
+    });
   };
 
   return (
     <div className="container mx-auto p-4 flex flex-col items-center">
-      <Toaster position="bottom-center" />
       <div
         {...getRootProps()}
         className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer w-full max-w-2xl"
@@ -75,7 +99,7 @@ const ColorPicker = () => {
         {isDragActive ? (
           <p>Let go of the image to begin</p>
         ) : (
-          <p>Drag or drop an image here, or click to select one</p>
+          <p>Drag or drop a JPEG, JPG, or PNG image here, or click to select one</p>
         )}
       </div>
 
@@ -104,8 +128,10 @@ const ColorPicker = () => {
               >
                 {selectedColor && color.hex === selectedColor.hex && (
                   <div 
-                    className={`absolute top-1 right-1 w-3 h-3 rounded-full ${color.isLight ? 'bg-black' : 'bg-white'}`}
-                  ></div>
+                    className={`absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full ${color.isLight ? 'bg-black text-white' : 'bg-white text-black'}`}
+                  >
+                    <FaExpand size={12} />
+                  </div>
                 )}
               </div>
             ))}

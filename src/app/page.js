@@ -11,6 +11,7 @@ export default function Home() {
       <main className="container mx-auto py-8">
         <ColorPicker />
       </main>
+      <Toaster position="top-right" />
       <Toaster position="bottom-center" />
     </div>
   );
