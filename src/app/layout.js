@@ -11,7 +11,7 @@ export const metadata = {
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
     images: [
       {
-        url: 'https://images/og-image1.png',
+        url: 'https://www.colorpicker.photos/images/og-image1.png',
         width: 2064,
         height: 1628,
         alt: 'Color Picker App',
@@ -24,7 +24,7 @@ export const metadata = {
     site: '@helloIamWilly',
     title: 'Color Picker - Extract Colors from Images',
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
-    images: ['https://images/og-image1.png'],
+    images: ['https://www.colorpicker.photos/mages/og-image1.png'],
   },
 };
 
@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {/* Favicon */}
-        <link rel="icon" href="/images/logocolor.png" sizes="any" />
+        <link rel="icon" href="https://www.colorpicker.photos/images/logocolor.png" sizes="any" />
         
         {/* Meta tags */}
         <meta name="description" content={metadata.description} />
@@ -48,7 +48,6 @@ export default function RootLayout({ children }) {
 
         {/* Simple Analytics Script */}
         <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-        <noscript><img src="https://simpleanalytics.io/noscript.gif" alt="" /></noscript>
       </head>
       <body className={inter.className}>
         {children}
