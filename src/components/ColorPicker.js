@@ -7,25 +7,40 @@ import { FaCopy, FaExpand } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const ColorPicker = () => {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState('/images/folsom1.jpeg');
   const [palette, setPalette] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
 
+  const handleImageProcessing = useCallback((imageSrc, isDefault = false) => {
+    if (!isDefault) {
+      setIsLoading(true);
+      setTimeout(() => setIsLoading(false), 1000);
+    }
+    
+    const img = new Image();
+    img.onload = () => {
+      setImage(imageSrc);
+      imageRef.current = img;
+      setIsLoading(false);
+      extractColors(img);
+    };
+    img.onerror = () => {
+      setIsLoading(false);
+      toast.error('Failed to load image');
+    };
+    img.src = imageSrc;
+  }, []);
+
+  useEffect(() => {
+    handleImageProcessing('/images/folsom1.jpeg', true);
+  }, [handleImageProcessing]);
+
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length > 0) {
       toast.error('Only JPEG, JPG, and PNG files!', {
-        style: {
-          border: '1px solid #ff4b4b',
-          padding: '16px',
-          color: '#ff4b4b',
-        },
-        iconTheme: {
-          primary: '#ff4b4b',
-          secondary: '#FFFAEE',
-        },
         position: 'top-right',
       });
       return;
@@ -34,13 +49,24 @@ const ColorPicker = () => {
     const file = acceptedFiles[0];
     const reader = new FileReader();
 
-    setIsLoading(true);
+    // Show toast immediately when file is dropped
+    toast('Processing. Hold tight!', {
+      icon: '🖼️',
+      position: 'top-right',
+      duration: 3000,
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+      },
+    });
+
     reader.onload = (e) => {
-      setImage(e.target.result);
+      handleImageProcessing(e.target.result, false);
     };
 
     reader.readAsDataURL(file);
-  }, []);
+  }, [handleImageProcessing]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -51,21 +77,9 @@ const ColorPicker = () => {
     multiple: false,
   });
 
-  useEffect(() => {
-    if (image) {
-      const img = new Image();
-      img.onload = () => {
-        imageRef.current = img;
-        extractColors();
-      };
-      img.src = image;
-    }
-  }, [image]);
-
-  const extractColors = () => {
-    if (canvasRef.current && imageRef.current) {
+  const extractColors = (img) => {
+    if (canvasRef.current && img) {
       const canvas = canvasRef.current;
-      const img = imageRef.current;
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
@@ -79,7 +93,6 @@ const ColorPicker = () => {
       }));
       setPalette(extractedPalette);
       setSelectedColor(extractedPalette[0]);
-      setIsLoading(false);
     }
   };
 
@@ -104,15 +117,12 @@ const ColorPicker = () => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     
-    // Get the cursor position relative to the canvas
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // Calculate the scaling factor
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    // Apply scaling to get the actual pixel coordinates
     const pixelX = Math.floor(x * scaleX);
     const pixelY = Math.floor(y * scaleY);
 
@@ -140,29 +150,30 @@ const ColorPicker = () => {
         )}
       </div>
 
-      {isLoading && (
-        <div className="mt-8 flex justify-center items-center">
-          <div className="loader"></div>
-        </div>
-      )}
-
-      {image && (
-        <div className="mt-8 relative w-full max-w-2xl mx-auto">
-          <img
-            ref={imageRef}
-            src={image}
-            alt="Uploaded"
-            className="w-full h-auto object-contain"
-            style={{ maxWidth: '100%', display: 'block' }}
-          />
-          <canvas
-            ref={canvasRef}
-            onClick={handleImageClick}
-            className="absolute top-0 left-0 w-full h-full cursor-crosshair"
-            style={{ opacity: 0 }}
-          />
-        </div>
-      )}
+      <div className="mt-8 relative w-full max-w-2xl mx-auto">
+        {isLoading && (
+          <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-75 z-10">
+            <div className="loader"></div>
+          </div>
+        )}
+        {image && (
+          <>
+            <img
+              ref={imageRef}
+              src={image}
+              alt="Uploaded"
+              className="w-full h-auto object-contain"
+              style={{ maxWidth: '100%', display: 'block' }}
+            />
+            <canvas
+              ref={canvasRef}
+              onClick={handleImageClick}
+              className="absolute top-0 left-0 w-full h-full cursor-crosshair"
+              style={{ opacity: 0 }}
+            />
+          </>
+        )}
+      </div>
 
       {palette.length > 0 && (
         <div className="mt-8 w-full max-w-2xl">
