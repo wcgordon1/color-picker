@@ -11,7 +11,7 @@ export const metadata = {
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
     images: [
       {
-        url: 'https://images/og-image.jpg',
+        url: 'https://images/og-image1.png',
         width: 2064,
         height: 1628,
         alt: 'Color Picker App',
@@ -24,7 +24,7 @@ export const metadata = {
     site: '@helloIamWilly',
     title: 'Color Picker - Extract Colors from Images',
     description: 'Upload an image and extract its color palette. Perfect for designers and developers.',
-    images: ['https://images/og-image.jpg'],
+    images: ['https://images/og-image1.png'],
   },
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logocolor.png" sizes="any" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
