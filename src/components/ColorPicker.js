@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import imagePalette from 'image-palette';
 import { FaCopy, FaExpand } from 'react-icons/fa';
@@ -11,6 +11,8 @@ const ColorPicker = () => {
   const [palette, setPalette] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length > 0) {
@@ -35,7 +37,6 @@ const ColorPicker = () => {
     setIsLoading(true);
     reader.onload = (e) => {
       setImage(e.target.result);
-      extractColors(e.target.result);
     };
 
     reader.readAsDataURL(file);
@@ -50,10 +51,21 @@ const ColorPicker = () => {
     multiple: false,
   });
 
-  const extractColors = (imageData) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
+  useEffect(() => {
+    if (image) {
+      const img = new Image();
+      img.onload = () => {
+        imageRef.current = img;
+        extractColors();
+      };
+      img.src = image;
+    }
+  }, [image]);
+
+  const extractColors = () => {
+    if (canvasRef.current && imageRef.current) {
+      const canvas = canvasRef.current;
+      const img = imageRef.current;
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
@@ -68,8 +80,7 @@ const ColorPicker = () => {
       setPalette(extractedPalette);
       setSelectedColor(extractedPalette[0]);
       setIsLoading(false);
-    };
-    img.src = imageData;
+    }
   };
 
   const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
@@ -87,6 +98,32 @@ const ColorPicker = () => {
     toast.success(`Copied! ${text}`, {
       position: 'bottom-center',
     });
+  };
+
+  const handleImageClick = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Get the cursor position relative to the canvas
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Calculate the scaling factor
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    // Apply scaling to get the actual pixel coordinates
+    const pixelX = Math.floor(x * scaleX);
+    const pixelY = Math.floor(y * scaleY);
+
+    const ctx = canvas.getContext('2d');
+    const pixelData = ctx.getImageData(pixelX, pixelY, 1, 1).data;
+    const color = {
+      rgb: `rgb(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]})`,
+      hex: rgbToHex(pixelData[0], pixelData[1], pixelData[2]),
+      isLight: isLightColor(pixelData[0], pixelData[1], pixelData[2])
+    };
+    setSelectedColor(color);
   };
 
   return (
@@ -109,9 +146,21 @@ const ColorPicker = () => {
         </div>
       )}
 
-      {image && !isLoading && (
-        <div className="mt-8 relative w-full max-w-2xl">
-          <img src={image} alt="Uploaded" className="w-full h-auto object-contain" />
+      {image && (
+        <div className="mt-8 relative w-full max-w-2xl mx-auto">
+          <img
+            ref={imageRef}
+            src={image}
+            alt="Uploaded"
+            className="w-full h-auto object-contain"
+            style={{ maxWidth: '100%', display: 'block' }}
+          />
+          <canvas
+            ref={canvasRef}
+            onClick={handleImageClick}
+            className="absolute top-0 left-0 w-full h-full cursor-crosshair"
+            style={{ opacity: 0 }}
+          />
         </div>
       )}
 
